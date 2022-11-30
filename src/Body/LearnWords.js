@@ -1,7 +1,19 @@
+import localforage from 'localforage';
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import styled from '@emotion/styled';
 
 const { initSqlJs } = window;
+
+localforage.config({
+    driver      : localforage.INDEXEDDB,
+    name        : 'roll-fish',
+    version     : 1.0,
+    size        : 1024*1024*100,
+    storeName   : 'local_fish',
+    description : 'local save fish record',
+});
+
+const LOCAL_SAVE = 'roll-fish-db';
 
 const LearnWords = () => {
     const [db, setDb] = useState(null);
@@ -16,8 +28,29 @@ const LearnWords = () => {
                 }
                 lockRef.current = true;
 
+                // read local
+                let localDB;
+                try {
+                    const value = await localforage.getItem(LOCAL_SAVE);
+                    console.log(value);
+                    localDB = value;
+                } catch (err) {
+                    console.log(err);
+                    alert('学习进度本地读取失败！请尝试清理缓存！');
+                }
+
                 const sqlPromise = initSqlJs({ locateFile: () => `db/sql-wasm.wasm` });
-                const dataPromise = fetch("db/inami.db").then(res => res.arrayBuffer());
+                let dataPromise;
+                if (localDB) {
+                    const readInitDB = () => {
+                        return new Promise((resolve) => {
+                            resolve(localDB)
+                        });
+                    }
+                    dataPromise = readInitDB();
+                } else {
+                    dataPromise = fetch("db/inami.db").then(res => res.arrayBuffer());
+                }
                 const [SQL, buf] = await Promise.all([sqlPromise, dataPromise]);
                 const loadDB = new SQL.Database(new Uint8Array(buf));
 
@@ -33,16 +66,25 @@ const LearnWords = () => {
         console.log(...args);
     };
 
-    const handleExec = useCallback((sql) => {
+    const handleExec = useCallback((sql, callback) => {
+        let res = false;
         try {
-            // The sql is executed synchronously on the UI thread.
-            // You may want to use a web worker here instead
-            setResults(db.exec(sql)); // an array of objects is returned
+            res = db.exec(sql);
+            // save db
+            (async () => {
+                try {
+                    await localforage.setItem(LOCAL_SAVE, db.export());
+                } catch (e) {
+                    alert('学习进度本地保存失败！');
+                }
+            })();
+
             setError(null);
         } catch (err) {
-        // exec throws an error when the SQL statement is invalid
             setError(err);
-            setResults([]);
+        }
+        if (typeof callback === 'function') {
+            callback(res);
         }
     }, [db]);
   
@@ -53,7 +95,7 @@ const LearnWords = () => {
         <div>
             Learn
 
-            <button onClick={() => { handleExec(`SELECT * from CET4_1 WHERE status = 0 LIMIT 0,10`) }}>test</button>
+            <button onClick={() => { handleExec(`SELECT * from CET4_1 WHERE status = 0 LIMIT 0,10`, setResults) }}>test</button>
         </div>
     );
 };

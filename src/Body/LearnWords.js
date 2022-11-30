@@ -1,6 +1,12 @@
 import localforage from 'localforage';
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import styled from '@emotion/styled';
+import FormControl from '@mui/material/FormControl';
+import InputLabel from '@mui/material/InputLabel';
+import Select from '@mui/material/Select';
+import Button from '@mui/material/Button';
+import MenuItem from '@mui/material/MenuItem';
+import { booksMap } from '../meta';
 
 const { initSqlJs } = window;
 
@@ -14,6 +20,22 @@ localforage.config({
 });
 
 const LOCAL_SAVE = 'roll-fish-db';
+
+
+
+const PlanTitle = styled.h1`
+    text-align: center;
+`;
+
+const FormLimit = styled.div`
+    width: 80%;
+    margin: 0 auto;
+`;
+
+const FormControlLine = styled(FormControl)`
+    margin-bottom: 26px;
+`;
+
 
 const LearnWords = () => {
     const [db, setDb] = useState(null);
@@ -62,15 +84,12 @@ const LearnWords = () => {
         })();
     }, []);
 
-    const setResults = (...args) => {
-        console.log(...args);
-    };
-
     const handleExec = useCallback((sql, callback) => {
         let res = false;
         try {
             res = db.exec(sql);
-            // save db
+            // Save db
+            // 每次sql执行都保存，不想考虑太多了
             (async () => {
                 try {
                     await localforage.setItem(LOCAL_SAVE, db.export());
@@ -87,15 +106,58 @@ const LearnWords = () => {
             callback(res);
         }
     }, [db]);
+
+    const [inProcess, setInProcess] = useState(false);
+    const [learnCount, setLearnCount] = useState(10);
+    const [learnBook, setLearnBook] = useState(booksMap[0][0]);
   
     if (error) return <pre>{error.toString()}</pre>;
     else if (!db) return <pre>Loading...</pre>;
 
+    const setResults = (...args) => {
+        console.log(...args);
+    };
+
     return (
         <div>
-            Learn
-
-            <button onClick={() => { handleExec(`SELECT * from CET4_1 WHERE status = 0 LIMIT 0,10`, setResults) }}>test</button>
+            <PlanTitle>制定学习计划</PlanTitle>
+            <FormLimit>
+                <FormControlLine fullWidth>
+                    <InputLabel id="learn-book-select-label">选择学习词库</InputLabel>
+                    <Select
+                        labelId="learn-book-select-label"
+                        id="learn-book-select"
+                        value={learnBook}
+                        label="选择学习词库"
+                        onChange={e => setLearnBook(e.target.value)}
+                    >
+                        {booksMap.map((line) => {
+                            return (
+                                <MenuItem key={line[0]} value={line[0]}>{line[1]}</MenuItem>
+                            );
+                        })}
+                    </Select>
+                </FormControlLine>
+                <FormControlLine fullWidth>
+                    <InputLabel id="learn-count-select-label">本轮学习数量</InputLabel>
+                    <Select
+                        labelId="learn-count-select-label"
+                        id="learn-count-select"
+                        value={learnCount}
+                        label="本轮学习数量"
+                        onChange={e => setLearnCount(e.target.value)}
+                    >
+                        <MenuItem value={5}>5</MenuItem>
+                        <MenuItem value={10}>10</MenuItem>
+                        <MenuItem value={20}>20</MenuItem>
+                        <MenuItem value={30}>30</MenuItem>
+                    </Select>
+                </FormControlLine>
+                <FormControlLine fullWidth>
+                    <Button fullWidth onClick={() => setInProcess(true)} variant="contained">开始学英语</Button>
+                </FormControlLine>
+            </FormLimit>
+            {/* <button onClick={() => { handleExec(`SELECT * from CET4_1 WHERE status = 0 LIMIT 0,10`, setResults) }}>test</button> */}
         </div>
     );
 };

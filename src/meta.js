@@ -20,11 +20,11 @@
 
 
 
-
-export const TABLE_NAME = "CET4_1";  // 当前书籍名字
-export const WORD_NUMBER = 10;  // 当前单词数量
-export const ENG_TYPE = 2;  // 英语类型1：美语，2：英语
-export const AUTO_PLAY = 1;  // 英语自动发音
+// 未使用
+// export const TABLE_NAME = "CET4_1";  // 当前书籍名字
+// export const WORD_NUMBER = 10;  // 当前单词数量
+// export const ENG_TYPE = 2;  // 英语类型1：美语，2：英语
+// export const AUTO_PLAY = 1;  // 英语自动发音
 
 
 export const booksMap = [

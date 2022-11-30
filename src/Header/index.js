@@ -9,12 +9,13 @@ const Logo = styled.img`
     height: 50px;
 `;
 
-const Header = () => {
+// 算了，就这样吧，懒得写回调了
+const Header = ({ handleClickLogo }) => {
     return (
         <AppBar position="static">
             <Toolbar variant="dense">
                 <IconButton edge="start" color="inherit" aria-label="menu" sx={{ mr: 2 }}>
-                    <Logo src={logo} />
+                    <Logo src={logo} alt="RollFish" onClick={handleClickLogo} />
                 </IconButton>
                 <Typography variant="h5" color="inherit" component="div">
                     RollFish

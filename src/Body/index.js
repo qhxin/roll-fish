@@ -28,12 +28,15 @@ const Tips = styled.div`
 
 const StyledPaper = styled(Paper)`
     padding: 16px 16px 32px 16px;
+
+    ${({ matches }) => {
+        return matches ? {
+            width: 800,
+            margin: '0 auto',
+        } : {};
+    }}
 `;
 
-const LimitPaper = styled(StyledPaper)`
-    width: 800px;
-    margin: 0 auto;
-`;
 
 const StartArea = styled(LayoutCenter)`
     margin-top: 16px;
@@ -43,13 +46,11 @@ const Body = () => {
     const theme = useTheme();
     const matches = useMediaQuery(theme.breakpoints.up('md'));
 
-    const MatchedPaper = matches ? LimitPaper : StyledPaper;
-
     const [started, setStarted] = useState(false);
     
     return (
         <Wrapper>
-            <MatchedPaper>
+            <StyledPaper matches={!!matches ? 1 : undefined}>
                 {started ? (
                     <>
                         <LearnWords />
@@ -70,7 +71,7 @@ const Body = () => {
                         </StartArea>
                     </>
                 )}
-            </MatchedPaper>
+            </StyledPaper>
         </Wrapper>
     );
 };

@@ -6,6 +6,7 @@ import InputLabel from '@mui/material/InputLabel';
 import Select from '@mui/material/Select';
 import Button from '@mui/material/Button';
 import MenuItem from '@mui/material/MenuItem';
+import LearnProcess from './LearnProcess';
 import { booksMap } from '../meta';
 
 const { initSqlJs } = window;
@@ -54,7 +55,7 @@ const LearnWords = () => {
                 let localDB;
                 try {
                     const value = await localforage.getItem(LOCAL_SAVE);
-                    console.log(value);
+                    // console.log(value);
                     localDB = value;
                 } catch (err) {
                     console.log(err);
@@ -87,16 +88,19 @@ const LearnWords = () => {
     const handleExec = useCallback((sql, callback) => {
         let res = false;
         try {
+            console.log(`run ${sql}`);
             res = db.exec(sql);
             // Save db
             // 每次sql执行都保存，不想考虑太多了
-            (async () => {
-                try {
-                    await localforage.setItem(LOCAL_SAVE, db.export());
-                } catch (e) {
-                    alert('学习进度本地保存失败！');
-                }
-            })();
+            if (!(sql.toUpperCase().indexOf('SELECT') === 0)) {
+                (async () => {
+                    try {
+                        await localforage.setItem(LOCAL_SAVE, db.export());
+                    } catch (e) {
+                        alert('学习进度本地保存失败！');
+                    }
+                })();
+            }
 
             setError(null);
         } catch (err) {
@@ -110,13 +114,20 @@ const LearnWords = () => {
     const [inProcess, setInProcess] = useState(false);
     const [learnCount, setLearnCount] = useState(10);
     const [learnBook, setLearnBook] = useState(booksMap[0][0]);
-  
+
     if (error) return <pre>{error.toString()}</pre>;
     else if (!db) return <pre>Loading...</pre>;
 
-    const setResults = (...args) => {
-        console.log(...args);
-    };
+    if (inProcess) {
+        return (
+            <LearnProcess
+                key={`${learnBook}-${learnCount}`}
+                learnCount={learnCount}
+                learnBook={learnBook}
+                handleExec={handleExec}
+            />
+        );
+    }
 
     return (
         <div>
@@ -157,7 +168,6 @@ const LearnWords = () => {
                     <Button fullWidth onClick={() => setInProcess(true)} variant="contained">开始学英语</Button>
                 </FormControlLine>
             </FormLimit>
-            {/* <button onClick={() => { handleExec(`SELECT * from CET4_1 WHERE status = 0 LIMIT 0,10`, setResults) }}>test</button> */}
         </div>
     );
 };

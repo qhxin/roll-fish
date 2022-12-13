@@ -8,6 +8,7 @@ import Button from '@mui/material/Button';
 import MenuItem from '@mui/material/MenuItem';
 import LearnProcess from './LearnProcess';
 import { booksMap } from '../meta';
+import _ from 'lodash';
 
 const { initSqlJs } = window;
 
@@ -23,6 +24,13 @@ localforage.config({
 const LOCAL_SAVE = 'roll-fish-db';
 
 
+
+const FlexBase = styled.div`
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+`;
 
 const PlanTitle = styled.h1`
     text-align: center;
@@ -85,11 +93,11 @@ const LearnWords = () => {
         })();
     }, []);
 
-    const handleExec = useCallback((sql, callback) => {
+    const handleExec = useCallback((sql, params, callback) => {
         let res = false;
         try {
-            console.log(`run ${sql}`);
-            res = db.exec(sql);
+            // console.log(`run ${sql}`);
+            res = db.exec(sql, params);
             // Save db
             // 每次sql执行都保存，不想考虑太多了
             if (!(sql.toUpperCase().indexOf('SELECT') === 0)) {
@@ -114,6 +122,29 @@ const LearnWords = () => {
     const [inProcess, setInProcess] = useState(false);
     const [learnCount, setLearnCount] = useState(10);
     const [learnBook, setLearnBook] = useState(booksMap[0][0]);
+    const [learnProcess, setLearnProcess] = useState({});
+
+    useEffect(() => {
+        if (db && typeof handleExec === 'function' && !inProcess) {
+            let sql = '';
+            _.each(booksMap, (line) => {
+                const book = line[0];
+                sql += `SELECT count(*), status from ${book} GROUP BY status;\n`;
+            });
+
+            handleExec(sql, undefined, (result) => {
+                const record = {};
+                _.each(result, ({ columns, values }, i) => {
+                    const mp = {};
+                    _.each(values, line => {
+                        mp[`${line[1]}`] = line[0];
+                    });
+                    record[booksMap[i][0]] = mp;
+                });
+                setLearnProcess(record);
+            })
+        }
+    }, [db, handleExec, inProcess]);
 
     if (error) return <pre>{error.toString()}</pre>;
     else if (!db) return <pre>Loading...</pre>;
@@ -125,6 +156,7 @@ const LearnWords = () => {
                 learnCount={learnCount}
                 learnBook={learnBook}
                 handleExec={handleExec}
+                handleEnd={() => setInProcess(false)}
             />
         );
     }
@@ -143,8 +175,20 @@ const LearnWords = () => {
                         onChange={e => setLearnBook(e.target.value)}
                     >
                         {booksMap.map((line) => {
+                            const process = learnProcess[line[0]];
+                            const show = process ? (
+                                learnProcess[line[0]]['1'] > 0 ?
+                                    `${learnProcess[line[0]]['1']} / ${learnProcess[line[0]]['0']}`:
+                                    `${learnProcess[line[0]]['0']}` 
+                            ) : '';
+
                             return (
-                                <MenuItem key={line[0]} value={line[0]}>{line[1]}</MenuItem>
+                                <MenuItem key={line[0]} value={line[0]}>
+                                    <FlexBase>
+                                        <div>{line[1]}</div>
+                                        <div>{show}</div>
+                                    </FlexBase>
+                                </MenuItem>
                             );
                         })}
                     </Select>

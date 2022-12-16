@@ -16,7 +16,7 @@ const PlanTitle = styled.h1`
 
 const FlexBase = styled.div`
     display: flex;
-    align-items: center;
+    align-items: flex-start;
 `;
 
 const FlexAround = styled(FlexBase)`
@@ -43,12 +43,20 @@ const WordPosition = styled.div`
 
 const Tag = styled.div`
     padding: 4px 12px;
-    background-color: #e1e1e1;
     border-radius: 6px;
     font-size: 12px;
     margin-right: 6px;
     min-width: 50px;
     text-align: center;
+
+    ${({ theme }) => {
+        // console.log(theme);
+        return {
+            // backgroundColor: theme.palette.grey[300],
+            color: theme.palette.info.contrastText,
+            backgroundColor: theme.palette.info[theme.palette.mode],
+        }
+    }}
 `;
 
 const TestTag = styled(Tag)`
@@ -64,7 +72,11 @@ const VoiceTag = styled(Tag)`
     justify-content: center;
 
     &:hover {
-        background-color: #a1a1a1;
+        ${({ theme }) => {
+            return {
+                backgroundColor: theme.palette.grey[400],
+            }
+        }}
     }
 `;
 

@@ -1,4 +1,4 @@
-import localforage from 'localforage';
+import localforage from '../localForage';
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import styled from '@emotion/styled';
 import FormControl from '@mui/material/FormControl';
@@ -7,22 +7,10 @@ import Select from '@mui/material/Select';
 import Button from '@mui/material/Button';
 import MenuItem from '@mui/material/MenuItem';
 import LearnProcess from './LearnProcess';
-import { booksMap } from '../meta';
+import { booksMap, LOCAL_SAVE } from '../meta';
 import _ from 'lodash';
 
 const { initSqlJs } = window;
-
-localforage.config({
-    driver      : localforage.INDEXEDDB,
-    name        : 'roll-fish',
-    version     : 1.0,
-    size        : 1024*1024*100,
-    storeName   : 'local_fish',
-    description : 'local save fish record',
-});
-
-const LOCAL_SAVE = 'roll-fish-db';
-
 
 
 const FlexBase = styled.div`

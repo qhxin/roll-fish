@@ -44,3 +44,7 @@ export const booksMap = [
     ["Level8_1", "专八真题高频词"],
     ["Level8luan_2", "专八核心词汇"],
 ];
+
+
+// 本地数据库key
+export const LOCAL_SAVE = 'roll-fish-db';

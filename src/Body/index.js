@@ -1,11 +1,20 @@
-import { useState } from 'react';
+import localforage from '../localForage';
+import { useCallback, useState } from 'react';
 import styled from '@emotion/styled';
 import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
 import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
 import { useTheme } from '@mui/material/styles';
+import IconButton from '@mui/material/IconButton';
+import DeleteIcon from '@mui/icons-material/Delete';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import LearnWords from './LearnWords';
+import { LOCAL_SAVE } from '../meta';
 import logo from '../assets/logo.png';
 
 const LayoutCenter = styled.div`
@@ -40,6 +49,13 @@ const StyledPaper = styled(Paper)`
 
 const StartArea = styled(LayoutCenter)`
     margin-top: 16px;
+    position: relative;
+`;
+
+const ClearArea = styled.div`
+    position: absolute;
+    top: 0;
+    right: 0;
 `;
 
 const Body = () => {
@@ -48,6 +64,30 @@ const Body = () => {
 
     const [started, setStarted] = useState(false);
     
+    const [openClear, setOpenClear] = useState(false);
+
+    const handleOpenClear = useCallback(() => {
+        setOpenClear(true);
+    }, []);
+
+    const handleCloseClear = useCallback(() => {
+        setOpenClear(false);
+    }, []);
+
+    const handleClear = useCallback(() => {
+        // console.log('clear');
+        (async () => {
+            
+            try {
+                await localforage.removeItem(LOCAL_SAVE);
+                handleCloseClear();
+            } catch (e) {
+                console.error(e);
+            }
+        })();
+
+    }, []);
+
     return (
         <Wrapper>
             <StyledPaper matches={!!matches ? 1 : undefined}>
@@ -68,7 +108,33 @@ const Body = () => {
                         </LayoutCenter>
                         <StartArea>
                             <Button variant="contained" onClick={() => setStarted(true)}>进入学习</Button>
+                            <ClearArea>
+                                <IconButton aria-label="delete" onClick={handleOpenClear}>
+                                    <DeleteIcon />
+                                </IconButton>
+                            </ClearArea>
                         </StartArea>
+                        <Dialog
+                            open={openClear}
+                            onClose={handleCloseClear}
+                            aria-labelledby="alert-dialog-title"
+                            aria-describedby="alert-dialog-description"
+                        >
+                            <DialogTitle id="alert-dialog-title">
+                                确定要清空本地数据吗？
+                            </DialogTitle>
+                            <DialogContent>
+                            <DialogContentText id="alert-dialog-description">
+                                清空本地数据意味着学习进度丢失，但如果你已经学完了，或者想从头再卷，或者想升级到社区最新的词库（词库几乎不可能更新了），那么可以点击确定清空。
+                            </DialogContentText>
+                            </DialogContent>
+                            <DialogActions>
+                            <Button onClick={handleClear} sx={{ mr: 2 }}>确定清空</Button>
+                            <Button variant="contained" onClick={handleCloseClear} autoFocus>
+                                取消
+                            </Button>
+                            </DialogActions>
+                        </Dialog>
                     </>
                 )}
             </StyledPaper>

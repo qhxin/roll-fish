@@ -7,6 +7,8 @@ import Select from '@mui/material/Select';
 import Button from '@mui/material/Button';
 import MenuItem from '@mui/material/MenuItem';
 import LearnProcess from './LearnProcess';
+import CircularProgress from '@mui/material/CircularProgress';
+import Box from '@mui/material/Box';
 import { booksMap, LOCAL_SAVE } from '../meta';
 import _ from 'lodash';
 
@@ -73,6 +75,13 @@ const LearnWords = () => {
                 const [SQL, buf] = await Promise.all([sqlPromise, dataPromise]);
                 const loadDB = new SQL.Database(new Uint8Array(buf));
 
+                if (!localDB) {
+                    try {
+                        await localforage.setItem(LOCAL_SAVE, loadDB.export());
+                    } catch (e) {
+                        alert('词库初始化保存失败！');
+                    }
+                }
                 setDb(loadDB);
             } catch (err) {
                 setError(err);
@@ -135,7 +144,14 @@ const LearnWords = () => {
     }, [db, handleExec, inProcess]);
 
     if (error) return <pre>{error.toString()}</pre>;
-    else if (!db) return <pre>Loading...</pre>;
+    else if (!db) {
+        return (
+            <Box sx={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column' }}>
+                <CircularProgress />
+                <p>正在下载词库，初始时间较长请耐心等待，初始化完成后再次使用则无需等待</p>
+            </Box>
+        );
+    }
 
     if (inProcess) {
         return (

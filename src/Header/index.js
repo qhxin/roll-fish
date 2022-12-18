@@ -22,23 +22,33 @@ const Header = ({ handleClickLogo = reload, handleToggleColorMode }) => {
     const theme = useTheme();
 
     return (
-        <AppBar position="static">
-            <Toolbar variant="dense">
-                <IconButton edge="start" color="inherit" aria-label="menu" sx={{ mr: 2 }} onClick={handleClickLogo}>
+        <>
+            <AppBar position="fixed">
+                <Toolbar variant="dense">
+                    <IconButton edge="start" color="inherit" aria-label="menu" sx={{ mr: 2 }} onClick={handleClickLogo}>
+                        <Logo src={logo} alt="RollFish" />
+                        <Typography variant="h5" color="inherit" component="div">
+                            RollFish
+                        </Typography>
+                    </IconButton>
+                    
+                    <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+                        学到的才是自己的
+                    </Typography>
+                    <IconButton sx={{ ml: 1 }} onClick={handleToggleColorMode} edge="end" color="inherit">
+                        {theme.palette.mode === 'dark' ? <Brightness7Icon /> : <Brightness4Icon />}
+                    </IconButton>
+                </Toolbar>
+            </AppBar>
+            <Toolbar>
+                <IconButton edge="start" color="inherit" aria-label="menu" sx={{ mr: 2, visibility: 'hidden' }}>
                     <Logo src={logo} alt="RollFish" />
                     <Typography variant="h5" color="inherit" component="div">
                         RollFish
                     </Typography>
                 </IconButton>
-                
-                <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-                    学到的才是自己的
-                </Typography>
-                <IconButton sx={{ ml: 1 }} onClick={handleToggleColorMode} edge="end" color="inherit">
-                    {theme.palette.mode === 'dark' ? <Brightness7Icon /> : <Brightness4Icon />}
-                </IconButton>
             </Toolbar>
-        </AppBar>
+        </>
     );
 }
 

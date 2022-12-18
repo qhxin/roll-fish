@@ -106,6 +106,9 @@ const Body = () => {
                             <div>由于ToastFish只支持Win10+系统且只有本地程序，为了让更多人能够持续<b>学习进步</b>，我开发了这个WEB版。当前仅支持学英语。</div>
                             <Tips>Tips: 数据和部分功能来自于 <a href="https://github.com/Uahh/ToastFish" target="_blank" rel="noopener noreferrer">ToastFish</a></Tips>
                         </LayoutCenter>
+                        <LayoutCenter>
+                            <div style={{ fontSize: 10, color: 'orange' }}>如果你的设备PWA支持良好，建议安装到本地使用。</div>
+                        </LayoutCenter>
                         <StartArea>
                             <Button variant="contained" onClick={() => setStarted(true)}>进入学习</Button>
                             <ClearArea>

@@ -24,10 +24,23 @@
 
 由于ToastFish只支持Win10+系统且只有本地程序，为了让更多人能够持续学习进步，我开发了这个WEB版。当前仅支持学英语。
 
+如果你的设备PWA支持良好，建议安装到本地使用。
+
 Tips: 数据来自于 [ToastFish](https://github.com/Uahh/ToastFish)
 
 </div>
 
+
+--------
+
+## for Preview
+
+- 可通过PWA安装
+- 支持白天黑夜主题
+- 学习数量设置
+- 学习成果检测
+
+<img src="preview.png" width="300" />
 
 --------
 

@@ -1,6 +1,6 @@
 {
   "name": "roll-fish",
-  "version": "0.1.0",
+  "version": "0.3.0",
   "private": true,
   "homepage": ".",
   "dependencies": {
@@ -19,7 +19,7 @@
   },
   "scripts": {
     "start": "craco start",
-    "build": "craco build",
+    "build": "craco build && node scripts/create-sw.js",
     "test": "craco test",
     "eject": "react-scripts eject"
   },

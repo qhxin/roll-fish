@@ -33,7 +33,7 @@ Tips: 数据来自于 [ToastFish](https://github.com/Uahh/ToastFish)
 
 --------
 
-## for Preview
+## Features
 
 - 可通过PWA安装
 - 支持白天黑夜主题
@@ -45,7 +45,7 @@ Tips: 数据来自于 [ToastFish](https://github.com/Uahh/ToastFish)
 --------
 
 
-## for Developers
+## Developers
 
 In the project directory, you can run:
 
